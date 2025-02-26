@@ -1,0 +1,66 @@
+---
+title: "Analysis"
+author: "EGillette"
+date: "2025-02-26"
+output: html_document
+---
+## DNA Sequence Analysis - Part One
+
+```{r setup, include=FALSE}
+Sequences_data<-read.table("https://raw.githubusercontent.com/EmiliagG/Rentrez/main/Sequences.csv", header=T, sep="," )
+library(dplyr)
+
+#print each sequence 
+print("Sequence 1: HQ433692.1, B.Burgdorferi")
+print(Sequences_data$Sequence[1])
+print("Sequence 2: HQ433694.1, B.Burgdorferi")
+print(Sequences_data$Sequence[2])
+print("Sequence 3: HQ433691.1, B.Burgdorferi ")
+print(Sequences_data$Sequence[3])
+
+#counting the number of base pairs in each sequence 
+A_bp<-c()
+T_bp<-c()
+G_bp<-c() 
+C_bp <-c()
+
+for(item in Sequences_data$Sequence){
+    A_bp<-c(A_bp, nchar(gsub("[^A]","",item)))
+    T_bp<-c(T_bp, nchar(gsub("[^T]", "", item)))
+    G_bp<-c(G_bp, nchar(gsub("[^G]", "", item)))
+    C_bp<-c(C_bp, nchar(gsub("[^C]", "", item)))
+}
+
+SequenceID=c("HQ433692.1","HQ433694.1","HQ433691.1")
+
+no_bp<-data.frame(SequenceID=SequenceID,
+                  A=A_bp,T=T_bp,G=G_bp,C=C_bp)
+
+no_bp
+
+#calculate the total number of bp in each sequence
+total_bp<-c()
+for (item in Sequences_data$Sequence) {
+  total_bp<-c(total_bp, nchar(item))
+}
+
+#calculate GC_Content
+GC<-no_bp %>%
+  group_by(SequenceID) %>%
+  summarize(GC_Content=(round(((sum(G,C)/481)*100),digits=2)))
+colnames(GC)[2]<-"GC Content (%)"
+GC
+
+```
+
+![Figure 1. Image of Borrelia burgdorferi]("C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Seven/A7_Gillette_20204160/Rentrez/BB.jpg)
+
+Link to Wikipedia with more information about Borrelia burgdorferi: https://en.wikipedia.org/wiki/Borrelia_burgdorferi
+
+#Part Two
+
+```{r}
+
+```
+
+
