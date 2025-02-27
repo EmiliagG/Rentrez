@@ -8,17 +8,14 @@ Bburg<-entrez_fetch(db = "nuccore", id = ncbi_ids, rettype = "fasta") #uses the 
 #Bburg
 
 #create the sequences object 
-Sequences<- strsplit(Bburg, "\n\n")
-#Sequences
+Sequences<- strsplit(Bburg, "\n\n") #splits the elements of character vector that match parameters
 
-#convert Sequences list object to dataframe 
-Sequences<-unlist(Sequences)
+Sequences<-unlist(Sequences) #convert the Sequences list object to data frame 
 
 #separate sequences from headers using regex
 header<-gsub("(^>.*sequence)\\n[ATCG].*","\\1",Sequences)
 seq<-gsub("^>.*sequence\\n([ATCG].*)","\\1",Sequences)
 Sequences<-data.frame(Name=header,Sequence=seq)
-#Sequences
 
 #remove newline characters
 seq<-gsub("\\n", "", seq)

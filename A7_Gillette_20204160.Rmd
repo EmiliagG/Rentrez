@@ -4,6 +4,8 @@ author: "EGillette"
 date: "2025-02-26"
 output: html_document
 ---
+https://github.com/EmiliagG/Rentrez
+
 ## DNA Sequence Analysis - Part One
 
 ```{r setup, include=FALSE}
@@ -36,7 +38,7 @@ SequenceID=c("HQ433692.1","HQ433694.1","HQ433691.1")
 no_bp<-data.frame(SequenceID=SequenceID,
                   A=A_bp,T=T_bp,G=G_bp,C=C_bp)
 
-no_bp
+print(no_bp)
 
 #calculate the total number of bp in each sequence
 total_bp<-c()
@@ -49,18 +51,65 @@ GC<-no_bp %>%
   group_by(SequenceID) %>%
   summarize(GC_Content=(round(((sum(G,C)/481)*100),digits=2)))
 colnames(GC)[2]<-"GC Content (%)"
-GC
+print(GC)
 
 ```
 
-![Figure 1. Image of Borrelia burgdorferi]("C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Seven/A7_Gillette_20204160/Rentrez/BB.jpg)
+![Figure 1. Scanning electron microsope image of the bacteria *Borrelia burgdorferi*, from the Center for Disease Control's PUblic Image Library, 2011, https://phil.cdc.gov/Details.aspx?pid=13177. ]("C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Seven/A7_Gillette_20204160/Rentrez/BB.jpg)
 
-Link to Wikipedia with more information about Borrelia burgdorferi: https://en.wikipedia.org/wiki/Borrelia_burgdorferi
+Link to Wikipedia with more information about *Borrelia burgdorferi*: https://en.wikipedia.org/wiki/Borrelia_burgdorferi
 
 #Part Two
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
+library(BiocManager)
+library(annotate)
+library(dplyr)
+
+unknownSeq<-read.delim("https://raw.githubusercontent.com/EmiliagG/Rentrez/main/UknownSeq.fa.txt")
+#str(unknownSeq)
+#head(unknownSeq$X..Human.isolate..unknown.sequence)
+
+unknownSeq2<-paste(unknownSeq$X..Human.isolate..unknown.sequence[1], 
+                   unknownSeq$X..Human.isolate..unknown.sequence[2], 
+                   unknownSeq$X..Human.isolate..unknown.sequence[3],
+                   unknownSeq$X..Human.isolate..unknown.sequence[4],
+                   unknownSeq$X..Human.isolate..unknown.sequence[5])
+#unknownSeq2
+unknownSeq2<-gsub(" ", "", unknownSeq2)
+#unknownSeq2
+
+unknownBlastDF<-blastSequences(unknownSeq2,hitListSize=50,
+                               as='data.frame',timeout=5000)
+#nrow(unknownBlastDF)
+str(unknownBlastDF)
+hits1<-unknownBlastDF %>%
+  group_by(Hit_def) %>%
+  summarize(Hsp_evalue)
+#hits1
+
+hits2<-unknownBlastDF %>%
+  group_by(Hit_def) %>%
+  summarize(Hsp_score)
+#hits2
+
+matchDNA<-(unknownBlastDF$Hsp_hseq[1])
+matchDNAString<-DNAString(matchDNA)
+unknownDNA<-DNAString(unknownSeq2)
+
+matchDNAString
+unknownDNA
+
+unknownBlastDF %>%
+  group_by(Hit_accession) %>%
+  summarize(Hit_def,Hsp_score, Hsp_evalue, Hsp_gaps)
+
+#not sure why all the values are the same...the code seems to be identical for all these IDs in GenBank. 
 
 ```
+Table 1. Output of the blastSequences (blastn) search of GenBank to identify a match the unknown DNA strand (n=326). 
 
+Using Basic Local Alignment Search Tool (BLAST) there is evidence the unknown DNA sequence provided to the Canadian Public Health Agency is a strain of *Yersinia pestis*. *Y.pestis* is the bacteria responsible for Plague, known in European history as the "Black Death," making this an infection of high concern ().Comparing the unknown DNA sequence to sequeces in NCBI's GenBank revealed over 300 matches with zero gaps between the query sequence and the GenBank matches, and high-scoring segment pair values of 500 (Table 1). 
 
+Reference
+Harvard Health Publishing.(2024, May 21). *Plague (Yersinia Pestis)*. Accessed at:  https://www.health.harvard.edu/a_to_z/plague-yersinia-pestis-a-to-z
