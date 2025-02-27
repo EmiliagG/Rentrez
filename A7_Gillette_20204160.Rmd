@@ -55,7 +55,7 @@ print(GC)
 
 ```
 
-![Figure 1. Scanning electron microsope image of the bacteria *Borrelia burgdorferi*, from the Center for Disease Control's PUblic Image Library, 2011, https://phil.cdc.gov/Details.aspx?pid=13177. ]("C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Seven/A7_Gillette_20204160/Rentrez/BB.jpg)
+![Figure 1. Scanning electron microsope image of the bacteria *Borrelia burgdorferi*, from the Center for Disease Control's PUblic Image Library, 2011, https://phil.cdc.gov/Details.aspx?pid=13177. ](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Seven/A7_Gillette_20204160/Rentrez/BB.jpg)
 
 Link to Wikipedia with more information about *Borrelia burgdorferi*: https://en.wikipedia.org/wiki/Borrelia_burgdorferi
 
@@ -92,13 +92,6 @@ hits2<-unknownBlastDF %>%
   group_by(Hit_def) %>%
   summarize(Hsp_score)
 #hits2
-
-matchDNA<-(unknownBlastDF$Hsp_hseq[1])
-matchDNAString<-DNAString(matchDNA)
-unknownDNA<-DNAString(unknownSeq2)
-
-matchDNAString
-unknownDNA
 
 unknownBlastDF %>%
   group_by(Hit_accession) %>%
