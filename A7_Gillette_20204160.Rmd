@@ -8,17 +8,12 @@ https://github.com/EmiliagG/Rentrez
 
 ## DNA Sequence Analysis - Part One
 
-```{r setup, include=FALSE}
+```{r setup, warning=FALSE, message=FALSE}
 Sequences_data<-read.table("https://raw.githubusercontent.com/EmiliagG/Rentrez/main/Sequences.csv", header=T, sep="," )
 library(dplyr)
 
 #print each sequence 
-print("Sequence 1: HQ433692.1, B.Burgdorferi")
-print(Sequences_data$Sequence[1])
-print("Sequence 2: HQ433694.1, B.Burgdorferi")
-print(Sequences_data$Sequence[2])
-print("Sequence 3: HQ433691.1, B.Burgdorferi ")
-print(Sequences_data$Sequence[3])
+print(c("Sequence 1: HQ433692.1, B.burgdorferi",Sequences_data$Sequence[1], "Sequence 2: HQ433694.1, B.burgdorferi",Sequences_data$Sequence[2],"Sequence 3: HQ433691.1, B.burgdorferi", Sequences_data$Sequence[3]))
 
 #counting the number of base pairs in each sequence 
 A_bp<-c()
@@ -38,8 +33,13 @@ SequenceID=c("HQ433692.1","HQ433694.1","HQ433691.1")
 no_bp<-data.frame(SequenceID=SequenceID,
                   A=A_bp,T=T_bp,G=G_bp,C=C_bp)
 
-print(no_bp)
+as.table(as.matrix(no_bp))
 
+```
+
+**Table 1.** The number of nucleotide base pairs (A, T, G, or C) present in the three different *B.burgdorferi* sequences. 
+
+```{r}
 #calculate the total number of bp in each sequence
 total_bp<-c()
 for (item in Sequences_data$Sequence) {
@@ -51,15 +51,17 @@ GC<-no_bp %>%
   group_by(SequenceID) %>%
   summarize(GC_Content=(round(((sum(G,C)/481)*100),digits=2)))
 colnames(GC)[2]<-"GC Content (%)"
-print(GC)
 
+as.table(as.matrix(GC))
 ```
 
-![Figure 1. Scanning electron microsope image of the bacteria *Borrelia burgdorferi*, from the Center for Disease Control's PUblic Image Library, 2011, https://phil.cdc.gov/Details.aspx?pid=13177. ](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Seven/A7_Gillette_20204160/Rentrez/BB.jpg)
+**Table 2.** Content (%) of G and C nucleotides present in three *B. burgdorferi* sequences.
 
 Link to Wikipedia with more information about *Borrelia burgdorferi*: https://en.wikipedia.org/wiki/Borrelia_burgdorferi
 
-#Part Two
+![**Figure 1.** Scanning electron microsope image of the bacteria *Borrelia burgdorferi*, from the Center for Disease Control's Public Image Library, 2011, https://phil.cdc.gov/Details.aspx?pid=13177](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Seven/A7_Gillette_20204160/Rentrez/BB.jpg){width=50%}
+
+## Part Two
 
 ```{r, warning=FALSE, message=FALSE}
 library(BiocManager)
@@ -82,7 +84,7 @@ unknownSeq2<-gsub(" ", "", unknownSeq2)
 unknownBlastDF<-blastSequences(unknownSeq2,hitListSize=50,
                                as='data.frame',timeout=5000)
 #nrow(unknownBlastDF)
-str(unknownBlastDF)
+#str(unknownBlastDF)
 hits1<-unknownBlastDF %>%
   group_by(Hit_def) %>%
   summarize(Hsp_evalue)
@@ -93,16 +95,16 @@ hits2<-unknownBlastDF %>%
   summarize(Hsp_score)
 #hits2
 
-unknownBlastDF %>%
+tb<-unknownBlastDF %>%
   group_by(Hit_accession) %>%
   summarize(Hit_def,Hsp_score, Hsp_evalue, Hsp_gaps)
-
-#not sure why all the values are the same...the code seems to be identical for all these IDs in GenBank. 
+tb
 
 ```
-Table 1. Output of the blastSequences (blastn) search of GenBank to identify a match the unknown DNA strand (n=326). 
+**Table 3**. Output of the blastSequences (blastn) search of GenBank to identify a match for the unknown DNA strand (nrow=326). 
 
-Using Basic Local Alignment Search Tool (BLAST) there is evidence the unknown DNA sequence provided to the Canadian Public Health Agency is a strain of *Yersinia pestis*. *Y.pestis* is the bacteria responsible for Plague, known in European history as the "Black Death," making this an infection of high concern ().Comparing the unknown DNA sequence to sequeces in NCBI's GenBank revealed over 300 matches with zero gaps between the query sequence and the GenBank matches, and high-scoring segment pair values of 500 (Table 1). 
+Using Basic Local Alignment Search Tool (BLAST) there is evidence the unknown DNA sequence provided to the Canadian Public Health Agency is a strain of *Yersinia pestis*. *Y.pestis* is the bacteria responsible for Plague, known in European history as the "Black Death," making this an infection of high concern (Harvard Health Publishing, 2024).Comparing the unknown DNA sequence to sequeces in NCBI's GenBank revealed over 300 matches with zero gaps between the query sequence and the GenBank matches, and high-scoring segment pair values of 500 (Table 3). 
 
 Reference
+
 Harvard Health Publishing.(2024, May 21). *Plague (Yersinia Pestis)*. Accessed at:  https://www.health.harvard.edu/a_to_z/plague-yersinia-pestis-a-to-z
